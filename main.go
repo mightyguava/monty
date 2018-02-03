@@ -11,9 +11,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/mightyguava/gomon/livereload"
 	"github.com/mightyguava/gomon/subproc"
+	"github.com/rjeczalik/notify"
 )
 
 func main() {
@@ -75,31 +75,24 @@ func main() {
 }
 
 // CreateWatcher creates and returns a fs watcher for the current working directory
-func CreateWatcher() (*fsnotify.Watcher, error) {
-	w, err := fsnotify.NewWatcher()
-	if err != nil {
+func CreateWatcher() (chan notify.EventInfo, error) {
+	c := make(chan notify.EventInfo)
+	if err := notify.Watch("./...", c, notify.All); err != nil {
 		return nil, err
 	}
-	dir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	if err = w.Add(dir); err != nil {
-		return nil, err
-	}
-	return w, nil
+	return c, nil
 }
 
 // WatchAndRun watches for file changes and restarts the command. If it gets a SIGINT or SIGTERM, it
 // will tell the child command to exit and then exit itself.
-func WatchAndRun(r *subproc.Runner, chrome *livereload.Chrome, w *fsnotify.Watcher) error {
+func WatchAndRun(r *subproc.Runner, chrome *livereload.Chrome, w chan notify.EventInfo) error {
 	var err error
 
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	for {
 		select {
-		case <-w.Events:
+		case <-w:
 			if r != nil {
 				log.Println("change detected, restarting command")
 				if err = r.Restart(); err != nil {

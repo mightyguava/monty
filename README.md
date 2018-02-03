@@ -23,7 +23,7 @@ gomon go run main.go
 gomon python -m SimpleHTTPServer
 ```
 
-Now `gomon` will watch for any file changes within your current directory, and keep saying "hello world". It doesn't do subdirectories yet, that's a TODO.
+Now `gomon` will watch for any file changes within your current directory and subdirectories, and keep saying "hello world" every time something changes.
 
 ### Live reload a Chrome tab
 
@@ -50,7 +50,7 @@ gomon sh -c my_super_awesome_script.sh
 
 ## How it works
 
-`gomon` uses [fsnotify](https://github.com/fsnotify/fsnotify) to watch the current directory for changes, and restart the command if anything changed. It doesn't care about what language your code is written in, just that you give it a command that can be executed on *nix.
+`gomon` uses [notify](https://github.com/rjeczalik/notify) to watch the current directory for changes, and restart the command if anything changed. It doesn't care about what language your code is written in, just that you give it a command that can be executed on *nix.
 
 `gomon` uses [chromedp](https://github.com/chromedp/chromedp) to control a Chrome window, reloading it when a file changes.
 
