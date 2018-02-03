@@ -16,9 +16,9 @@ gomon echo hello world
 
 Now `gomon` will watch for any file changes within your current directory, and keep saying "hello world". It doesn't do subdirectories yet, that's a TODO.
 
-### Webservers
+### Web Servers
 
-It can do webservers too
+It can do web servers too!
 
 ```
 gomon python -m SimpleHTTPServer
@@ -26,7 +26,7 @@ gomon python -m SimpleHTTPServer
 
 ### Fancy
 
-You can run a whole bash script. It's ok that your script exits
+You can run a whole bash script. It's ok that your script exits. `gomon` will restart it whenever you change something.
 
 ```
 gomon sh -c 'echo hello; echo world; echo i can chain forever'
