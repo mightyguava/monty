@@ -2,7 +2,7 @@
 
 `gomon` is a tool for doing something when files change. It can do one of 2 things, or both:
 - Re-run a command (or restart a web server) kind of like `nodemon`, `chokidar`, and `reflex`
-- Reload a URL in a browser tab, kind of like `livereload`, but with no setup required!
+- Launch Chrome and reload the page as needed, kind of like `livereload`, but with no setup required!
 
 `gomon` is ridiculously simple. The whole thing could just be a bash script around `inotifywait`, but a bash script just isn't as cool as a Go tool 🔥 🔥 🔥
 
