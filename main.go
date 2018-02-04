@@ -7,9 +7,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"os/signal"
 	"strings"
-	"syscall"
 
 	"github.com/mightyguava/monty/livereload"
 	"github.com/mightyguava/monty/subproc"
@@ -27,7 +25,7 @@ func main() {
 
 	cmd := flag.Args()
 	if len(cmd) == 0 && *urlFlag == "" {
-		fmt.Println("Usage: monty [command] [args ...]")
+		fmt.Println()
 		os.Exit(1)
 	}
 
@@ -69,55 +67,17 @@ func main() {
 		}
 	}
 
-	if err = WatchAndRun(r, chrome, w); err != nil {
+	reloader := NewReloader(r, chrome, w)
+	if err = reloader.WatchAndRun(); err != nil {
 		log.Fatal(err)
 	}
 }
 
 // CreateWatcher creates and returns a fs watcher for the current working directory
 func CreateWatcher() (chan notify.EventInfo, error) {
-	c := make(chan notify.EventInfo)
+	c := make(chan notify.EventInfo, 100)
 	if err := notify.Watch("./...", c, notify.All); err != nil {
 		return nil, err
 	}
 	return c, nil
-}
-
-// WatchAndRun watches for file changes and restarts the command. If it gets a SIGINT or SIGTERM, it
-// will tell the child command to exit and then exit itself.
-func WatchAndRun(r *subproc.Runner, chrome *livereload.Chrome, w chan notify.EventInfo) error {
-	var err error
-
-	sigChan := make(chan os.Signal)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	for {
-		select {
-		case <-w:
-			if r != nil {
-				log.Println("change detected, restarting command")
-				if err = r.Restart(); err != nil {
-					return err
-				}
-			}
-			if chrome != nil {
-				log.Println("change detected, reloading chrome")
-				if err = chrome.Reload(); err != nil {
-					return err
-				}
-			}
-		case <-sigChan:
-			log.Println("signal received, exiting")
-			if r != nil {
-				if err = r.Stop(); err != nil {
-					log.Println("error stopping process: ", err)
-				}
-			}
-			if chrome != nil {
-				if err = chrome.Close(); err != nil {
-					log.Println("error closing Chrome: ", err)
-				}
-			}
-			return nil
-		}
-	}
 }
