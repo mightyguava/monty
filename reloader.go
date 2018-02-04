@@ -36,7 +36,7 @@ func NewReloader(r *subproc.Runner, chrome *livereload.Chrome, w chan notify.Eve
 func (r *Reloader) WatchAndRun() error {
 	var err error
 
-	limitWindow := 500 * time.Millisecond
+	limitWindow := 1 * time.Second
 	mu := &sync.Mutex{}
 	reloadPending := false
 
@@ -53,7 +53,7 @@ func (r *Reloader) WatchAndRun() error {
 				reloadPending = true
 				go func() {
 					lm.Wait(context.Background())
-					if err := r.Reload(); err != nil {
+					if err = r.Reload(); err != nil {
 						errChan <- err
 					}
 					reloadPending = false
