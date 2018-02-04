@@ -12,6 +12,7 @@ import (
 
 // Runner manages running, stopping, and restarting the command we want to execute
 type Runner struct {
+	cmdString   string
 	templateCmd *exec.Cmd
 	runningCmd  *exec.Cmd
 	done        chan error
@@ -21,8 +22,9 @@ type Runner struct {
 }
 
 // NewRunner allocates and initializes a new Runner
-func NewRunner(cmd *exec.Cmd) *Runner {
+func NewRunner(cmd *exec.Cmd, cmdString string) *Runner {
 	return &Runner{
+		cmdString:   cmdString,
 		templateCmd: cmd,
 		mu:          &sync.Mutex{},
 	}
@@ -30,6 +32,7 @@ func NewRunner(cmd *exec.Cmd) *Runner {
 
 // Start executes the command in a separate process
 func (r *Runner) Start() error {
+	log.Println("starting command: ", r.cmdString)
 	c := &exec.Cmd{}
 	*c = *r.templateCmd
 	c.Stdout = os.Stdout

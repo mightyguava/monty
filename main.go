@@ -42,8 +42,7 @@ func main() {
 		}
 		cmdString := strings.Join(cmd, " ")
 		executable := cmd[0]
-		r = subproc.NewRunner(exec.Command(executable, args...))
-		log.Println("starting command: ", cmdString)
+		r = subproc.NewRunner(exec.Command(executable, args...), cmdString)
 		if err = r.Start(); err != nil {
 			log.Fatal("error starting command: ", err.Error())
 		}
