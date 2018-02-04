@@ -11,14 +11,14 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/mightyguava/gomon/livereload"
-	"github.com/mightyguava/gomon/subproc"
+	"github.com/mightyguava/monty/livereload"
+	"github.com/mightyguava/monty/subproc"
 	"github.com/rjeczalik/notify"
 )
 
 func main() {
 	log.SetFlags(0)
-	log.SetPrefix("gomon: ")
+	log.SetPrefix("monty: ")
 	log.SetOutput(os.Stderr)
 
 	urlFlag := flag.String("url", "", "a URL to open in the browser and to live reload")
@@ -27,7 +27,7 @@ func main() {
 
 	cmd := flag.Args()
 	if len(cmd) == 0 && *urlFlag == "" {
-		fmt.Println("Usage: gomon [command] [args ...]")
+		fmt.Println("Usage: monty [command] [args ...]")
 		os.Exit(1)
 	}
 
