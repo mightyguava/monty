@@ -23,7 +23,7 @@ func main() {
 
 	cmd := flag.Args()
 	if len(cmd) == 0 && *urlFlag == "" {
-		fmt.Println()
+		fmt.Println("Usage: monty [flags ...] [command] [args ...]")
 		os.Exit(1)
 	}
 
@@ -48,16 +48,19 @@ func main() {
 	var chrome *livereload.Chrome
 	if *urlFlag != "" {
 		if chrome, err = livereload.NewChrome(*urlFlag); err != nil {
-			log.Fatal("could not connect to chrome:", err)
+			r.Stop()
+			log.Fatal("could not connect to chrome: ", err)
 		}
 		log.Println("opening Chrome to:", *urlFlag)
 		if err = chrome.Open(); err != nil {
-			log.Fatal("could not open url:", *urlFlag)
+			r.Stop()
+			log.Fatal("could not open url: ", *urlFlag)
 		}
 	}
 
 	reloader := NewReloader(r, chrome, w)
 	if err = reloader.WatchAndRun(); err != nil {
+		reloader.Shutdown()
 		log.Fatal(err)
 	}
 }

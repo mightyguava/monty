@@ -62,16 +62,7 @@ func (r *Reloader) WatchAndRun() error {
 			mu.Unlock()
 		case <-sigChan:
 			log.Println("signal received, exiting")
-			if r.r != nil {
-				if err = r.r.Stop(); err != nil {
-					log.Println("error stopping process:", err)
-				}
-			}
-			if r.chrome != nil {
-				if err = r.chrome.Close(); err != nil {
-					log.Println("error closing Chrome:", err)
-				}
-			}
+			r.Shutdown()
 			return nil
 		}
 	}
@@ -92,4 +83,18 @@ func (r *Reloader) Reload() error {
 		}
 	}
 	return nil
+}
+
+// Shutdown stops any running command and closes the chrome window
+func (r *Reloader) Shutdown() {
+	if r.r != nil {
+		if err := r.r.Stop(); err != nil {
+			log.Println("error stopping process:", err)
+		}
+	}
+	if r.chrome != nil {
+		if err := r.chrome.Close(); err != nil {
+			log.Println("error closing Chrome:", err)
+		}
+	}
 }

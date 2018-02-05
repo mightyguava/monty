@@ -28,7 +28,10 @@ func NewChrome(urlToOpen string) (*Chrome, error) {
 		return nil, err
 	}
 	// create chrome instance
-	cdp, err := chromedp.New(context.Background(), chromedp.WithErrorf(log.Printf))
+	cdp, err := chromedp.New(
+		context.Background(),
+		chromedp.WithErrorf(log.Printf),
+	)
 	if err != nil {
 		return nil, err
 	}
