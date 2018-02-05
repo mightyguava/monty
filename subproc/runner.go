@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -14,6 +15,7 @@ import (
 type Runner struct {
 	templateCmd *exec.Cmd
 	runningCmd  *exec.Cmd
+	cmdString   string
 	done        chan error
 
 	mu      *sync.Mutex
@@ -24,12 +26,15 @@ type Runner struct {
 func NewRunner(cmd *exec.Cmd) *Runner {
 	return &Runner{
 		templateCmd: cmd,
+		cmdString:   strings.Join(cmd.Args, " "),
 		mu:          &sync.Mutex{},
 	}
 }
 
 // Start executes the command in a separate process
 func (r *Runner) Start() error {
+	log.Println("starting command:", r.cmdString)
+
 	c := &exec.Cmd{}
 	*c = *r.templateCmd
 	c.Stdout = os.Stdout
@@ -80,7 +85,7 @@ func (r *Runner) Stop() error {
 		return nil
 	case <-time.After(3 * time.Second):
 		if err := syscall.Kill(-c.Process.Pid, syscall.SIGKILL); err != nil {
-			return errors.New("failed to kill: " + err.Error())
+			return errors.New("failed to kill:" + err.Error())
 		}
 		log.Println("timed out waiting for command to stop. KILLED")
 	}

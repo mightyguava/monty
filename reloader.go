@@ -64,12 +64,12 @@ func (r *Reloader) WatchAndRun() error {
 			log.Println("signal received, exiting")
 			if r.r != nil {
 				if err = r.r.Stop(); err != nil {
-					log.Println("error stopping process: ", err)
+					log.Println("error stopping process:", err)
 				}
 			}
 			if r.chrome != nil {
 				if err = r.chrome.Close(); err != nil {
-					log.Println("error closing Chrome: ", err)
+					log.Println("error closing Chrome:", err)
 				}
 			}
 			return nil
