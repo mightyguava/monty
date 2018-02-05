@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -51,19 +50,12 @@ func main() {
 
 	var chrome *livereload.Chrome
 	if *urlFlag != "" {
-		url, err := url.Parse(*urlFlag)
-		if err != nil {
-			log.Fatal("invalid url: ", *urlFlag)
+		if chrome, err = livereload.NewChrome(*urlFlag); err != nil {
+			log.Fatal("could not connect to chrome:", err)
 		}
-		if url.Scheme == "" {
-			url.Scheme = "http"
-		}
-		if chrome, err = livereload.NewChrome(url.String()); err != nil {
-			log.Fatal("could not connect to chrome: ", err)
-		}
-		log.Println("opening Chrome to: ", url.String())
+		log.Println("opening Chrome to:", *urlFlag)
 		if err = chrome.Open(); err != nil {
-			log.Fatal("could not open url: ", url.String())
+			log.Fatal("could not open url:", *urlFlag)
 		}
 	}
 
